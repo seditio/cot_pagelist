@@ -5,6 +5,13 @@ Hooks=global
 [END_COT_EXT]
 ==================== */
 
+/**
+ * PageList
+ *
+ * @package PageList
+ * @copyright (c) 2012-2016 seditio.by
+ */
+
 defined('COT_CODE') or die('Wrong URL');
 
 require_once cot_incfile('page', 'module');
@@ -25,8 +32,16 @@ require_once cot_incfile('page', 'module');
  */
 function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $cat = '', $blacklist = '', $whitelist = '', $sub = true, $pagination = 'pld', $noself = false)
 {
-	global $db, $db_pages, $db_users, $env, $structure, $cot_extrafields;
 
+	global $db, $db_pages, $env, $structure, $cot_extrafields;
+
+	/* === Hook === */
+	foreach (array_merge(cot_getextplugins('pagelist.first')) as $pl)
+	{
+		include $pl;
+	}
+	/* ===== */
+	
 	// Compile lists
 	if (!empty($blacklist))
 	{
@@ -54,7 +69,7 @@ function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $
 	}
 	elseif (!empty($cat) && $sub)
 	{
-		// Specific cat
+		// ... or specific cat
 		$cats = cot_structure_children('page', $cat, $sub);
 	}
 
@@ -85,7 +100,7 @@ function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $
 		$where_condition .= " AND page_id != $id";
 	}
 
-	// Get pagination number if necessary
+	// Get pagination if necessary
 	if (!empty($pagination))
 	{
 		list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
@@ -94,30 +109,45 @@ function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $
 	{
 		$d = 0;
 	}
-
+	
 	// Display the items
 	$t = new XTemplate(cot_tplfile($tpl, 'plug'));
-
+	
+	// 
+	if ($cfg['plugin']['pagelist']['users'])
+	{
+		global $db_users;
+		$pagelist_join_columns .= ' , u.* ';
+		$pagelist_join_tables .= ' LEFT JOIN '.$db_users.' AS u ON u.user_id = p.page_ownerid ';
+	}
+	
+	// Add i18n features if installed
+	if (cot_plugin_active('i18n'))
+	{
+		global $db_i18n_pages, $i18n_locale;
+		$pagelist_join_columns .= ' , i18n.* ';
+		$pagelist_join_tables .= ' LEFT JOIN '.$db_i18n_pages.' AS i18n ON i18n.ipage_id=p.page_id AND i18n.ipage_locale="'.$i18n_locale.'" AND i18n.ipage_id IS NOT NULL ';
+	}
+	
 	/* === Hook === */
-	foreach (array_merge(cot_getextplugins('customnews.query'), cot_getextplugins('pagelist.query')) as $pl)
+	foreach (array_merge(cot_getextplugins('pagelist.query')) as $pl)
 	{
 		include $pl;
 	}
 	/* ===== */
-
-	$totalitems = $db->query("SELECT COUNT(*)
-		FROM $db_pages AS p $cns_join_tables
-		WHERE page_state='0' $where_cat $where_condition")->fetchColumn();
-
+	
 	$sql_order = empty($order) ? '' : "ORDER BY $order";
 	$sql_limit = ($items > 0) ? "LIMIT $d, $items" : '';
 
-	$res = $db->query("SELECT p.*, u.* $cns_join_columns
-		FROM $db_pages AS p
-			LEFT JOIN $db_users AS u ON p.page_ownerid = u.user_id
-			$cns_join_tables
+	$where = "page_cat = 'folio'";
+	
+	$res = $db->query("SELECT p.* $pagelist_join_columns
+		FROM $db_pages AS p 
+		$pagelist_join_tables
 		WHERE page_state='0' $where_cat $where_condition
 		$sql_order $sql_limit");
+
+	$totalitems = $db->query("SELECT COUNT(*) FROM $db_pages AS p $pagelist_join_tables WHERE page_state='0' $where_cat $where_condition")->fetchColumn();
 
 	$jj = 1;
 	while ($row = $res->fetch())
@@ -130,7 +160,10 @@ function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $
 			'PAGE_ROW_RAW'     => $row
 		));
 
-		$t->assign(cot_generate_usertags($row, 'PAGE_ROW_OWNER_'));
+		if ($cfg['plugin']['pagelist']['users'])
+		{
+			$t->assign(cot_generate_usertags($row, 'PAGE_ROW_OWNER_'));
+		}
 
 		/* === Hook === */
 		foreach (cot_getextplugins('pagelist.loop') as $pl)
@@ -184,5 +217,3 @@ function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $
 	$t->parse();
 	return $t->text();
 }
-
-?>

@@ -1,3 +1,12 @@
-<?php defined('COT_CODE') or die('Wrong URL');
+<?php 
+/**
+ * Russian Language File for PageList Plugin
+ *
+ * @package PageList
+ * @copyright (c) 2012-2016 seditio.by
+ */
 
-$L['info_desc'] = 'Многофункциональный и гибкий инструмент для глобального создания списков страниц';
+defined('COT_CODE') or die('Wrong URL');
+
+$L['info_desc'] = 'Функция создания виджетов для модуля Page';
+$L['cfg_users'] = 'Создавать теги USER_';
