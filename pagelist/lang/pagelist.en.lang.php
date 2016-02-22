@@ -1,6 +1,6 @@
 <?php 
 /**
- * Russian Language File for PageList Plugin
+ * English Language File for PageList Plugin
  *
  * @package PageList
  * @copyright (c) 2012-2016 seditio.by
