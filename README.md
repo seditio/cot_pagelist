@@ -1,5 +1,5 @@
 # cot-pagelist
-Cotonti widget rendering pages anywhere
+Rendering page widgets anywhere
 
 Изменения по сравнению с первым релизом от Trustmaster:
 
@@ -11,4 +11,18 @@ Cotonti widget rendering pages anywhere
 
 4. Подчистил немного
 
-Изначально хотел добавить вместе с поддержкой комментариев поддержку рейтингов (плагин Star Ratings) и тегов (плагин Tags), но потом решил, что проще делать это через использование готовых функций в шаблоне -- там, где необходимо, а не генерить теги глобально если, например, требуется только в одном вызове функции
+5. Добавил поддержку Star Ratings (опционально, на всякий случай)
+
+===
+
+Changes as compared to the initial release by Trustmaster:
+
+1. Removed comments parts -- can be replaced using {PAGE_ROW_ID|cot_comments_count('page', $this)|cot_declension($this, 'Comments')} as needed
+
+2. Optional user tags generation (did not need this in some projests)
+
+3. Added i18n support
+
+4. Minor cleanup
+
+5. Added Star Ratings plugin support (optional)

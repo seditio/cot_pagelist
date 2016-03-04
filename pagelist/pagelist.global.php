@@ -6,7 +6,7 @@ Hooks=global
 ==================== */
 
 /**
- * PageList
+ * PageList Plugin
  *
  * @package PageList
  * @copyright (c) 2012-2016 seditio.by
@@ -138,8 +138,6 @@ function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $
 	
 	$sql_order = empty($order) ? '' : "ORDER BY $order";
 	$sql_limit = ($items > 0) ? "LIMIT $d, $items" : '';
-
-	$where = "page_cat = 'folio'";
 	
 	$res = $db->query("SELECT p.* $pagelist_join_columns
 		FROM $db_pages AS p 
