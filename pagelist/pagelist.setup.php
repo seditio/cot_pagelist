@@ -17,7 +17,7 @@
 [END_COT_EXT]
 
 [BEGIN_COT_EXT_CONFIG]
-users=01:radio:0,1:0:Generate usertags
+users=01:radio::0:Generate usertags
 ratings=02:radio::0:Generate Ratings Plugin tags
 [END_COT_EXT_CONFIG]
 ==================== */
