@@ -30,7 +30,7 @@ require_once cot_incfile('page', 'module');
  * @param  boolean $noself     Exclude the current page from the rowset for pages.
  * @return string              Parsed HTML
  */
-function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $cat = '', $blacklist = '', $whitelist = '', $sub = true, $pagination = 'pld', $noself = false)
+function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $cat = '', $blacklist = '', $whitelist = '', $sub = true, $pagination = 'pld', $noself = false, $offset = '0')
 {
 
 	global $db, $db_pages, $env, $structure, $cot_extrafields;
@@ -137,6 +137,8 @@ function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $
 	/* ===== */
 	
 	$sql_order = empty($order) ? '' : "ORDER BY $order";
+	
+	$d = $d + $offset;
 	$sql_limit = ($items > 0) ? "LIMIT $d, $items" : '';
 	
 	$res = $db->query("SELECT p.* $pagelist_join_columns
