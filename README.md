@@ -1,10 +1,10 @@
 # cot-pagelist
 Rendering page widgets anywhere
 
-Использование:
+## Использование:
 
 
-История:
+## История:
 
 вер. 2.01 (Изменения по сравнению с первым релизом от Trustmaster:)
 
@@ -16,7 +16,9 @@ Rendering page widgets anywhere
 
 ===
 
-Version History:
+## How to Use:
+
+## Version History:
 
 ver. 2.01 Changes as compared to the initial release by Trustmaster:
 
