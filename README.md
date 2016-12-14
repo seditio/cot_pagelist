@@ -3,7 +3,7 @@ Rendering page widgets anywhere
 
 ## Использование:
 
-```
+```html
 {PHP|pagelist($tpl, $items, $order, $condition, $cat, $blacklist, $whitelist, $sub, $pagination, $noself, $offset)}
 ```
 
