@@ -31,6 +31,7 @@ Rendering page widgets anywhere
 3. Добавил поддержку i18n (в некоторых проектах требовалось)
 4. Подчистил немного
 5. Добавил поддержку Star Ratings (опционально, на всякий случай)
+6. Добавил параметр `$offset`
 
 ===
 
@@ -47,3 +48,4 @@ ver. 2.01 (Changes as compared to the initial release by Trustmaster):
 3. Added i18n support
 4. Minor cleanup
 5. Added Star Ratings plugin support (optional)
+6. Added `$offset` parameter
