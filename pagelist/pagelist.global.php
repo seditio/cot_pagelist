@@ -33,7 +33,7 @@ require_once cot_incfile('page', 'module');
 function pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $cat = '', $blacklist = '', $whitelist = '', $sub = true, $pagination = 'pld', $noself = false, $offset = '0')
 {
 
-	global $db, $db_pages, $env, $structure, $cot_extrafields;
+	global $db, $db_pages, $env, $structure, $cot_extrafields, $cfg;
 
 	/* === Hook === */
 	foreach (array_merge(cot_getextplugins('pagelist.first')) as $pl)

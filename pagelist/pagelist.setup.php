@@ -5,8 +5,8 @@
  * Name=PageList Widget
  * Category=navigation-structure
  * Description=Generates custom page lists available via {PHP|pagelist} callback
- * Version=2.01
- * Date=2016-03-04
+ * Version=2.02
+ * Date=2016-12-14
  * Author=Vladimir Sibirov / Dmitri Beliavski
  * Copyright=&copy; 2012-2016 Seditio.By
  * Notes=
