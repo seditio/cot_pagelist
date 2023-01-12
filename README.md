@@ -4,7 +4,7 @@ Rendering page widgets anywhere
 ## Использование:
 
 ```html
-{PHP|pagelist($tpl, $items, $order, $condition, $cat, $blacklist, $whitelist, $sub, $pagination, $noself, $offset)}
+{PHP|cot_pagelist($tpl, $items, $order, $condition, $cat, $blacklist, $whitelist, $sub, $pagination, $noself, $offset)}
 ```
 
 Назначение параметров (в скобках значение по умолчанию -- если не указано пользователем):
