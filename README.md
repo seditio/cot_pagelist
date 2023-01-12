@@ -47,6 +47,7 @@ Rendering page widgets anywhere
 6. Добавил параметр `$offset`
 
 вер. 3.00 -- очередная полуфинальная версия
+
 ===
 
 ## How to Use:
