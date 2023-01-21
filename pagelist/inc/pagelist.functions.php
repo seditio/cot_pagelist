@@ -18,7 +18,7 @@ require_once cot_incfile('page', 'module');
  * @param		bool		$cc_subs Include subcategories
  * @return	string	Condition as SQL string
  */
-function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_subs) {
+function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_subs = '') {
 
 	global $db, $structure;
 
@@ -60,7 +60,7 @@ function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_subs) {
  * @param  int     $offset     10. Exclude specified number of records
  * @return string              Parsed HTML
  */
-function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $mode = '', $cats = '', $subs = TRUE, $pagination = NULL, $noself = TRUE, $offset = '0') {
+function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $mode = '', $cats = '', $subs = FALSE, $pagination = NULL, $noself = FALSE, $offset = 0) {
 
 	global $db, $db_pages, $env, $structure, $cot_extrafields, $cfg;
 

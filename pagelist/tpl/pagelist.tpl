@@ -2,7 +2,9 @@
 <ul class="m-0">
 <!-- BEGIN: PAGE_ROW -->
 	<li>
-		<a href="{PAGE_ROW_URL}">{PAGE_ROW_TITLE}</a>
+			<p class="m-0">{PAGE_ROW_SHORTTITLE}</p>
+			<p class="m-0">{PAGE_ROW_DATE}</p>
+			<p class="m-0">{PAGE_ROW_DATE_STAMP}</p>
 	</li>
 <!-- END: PAGE_ROW -->
 </ul>
