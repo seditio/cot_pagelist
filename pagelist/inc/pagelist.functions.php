@@ -42,6 +42,9 @@ function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
 		}
 
 	}
+	else {
+		$cc_where = '';
+	}
 	return $cc_where;
 
 }
@@ -88,6 +91,9 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 
 	// Display the items
 	$t = new XTemplate(cot_tplfile($tpl, 'plug'));
+
+	$pagelist_join_columns = '';
+	$pagelist_join_tables = '';
 
 	// Users Module Support
 	if ($cfg['plugin']['pagelist']['users']) {
