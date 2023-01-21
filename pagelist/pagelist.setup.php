@@ -5,8 +5,8 @@ Code=pagelist
 Name=PageList Widget
 Category=navigation-structure
 Description=Generates custom page lists available via {PHP|pagelist} callback
-Version=3.00
-Date=2023-01-12
+Version=3.10
+Date=2023-12-21
 Author=Vladimir Sibirov / Dmitri Beliavski
 Copyright=&copy; 2012-2023 Seditio.By
 Notes=
@@ -23,10 +23,11 @@ ratings=02:radio::0:Generate Ratings tags
 ==================== */
 
 /**
- * Setup Part for the PageList Plugin
- *
- * @package PageList
- * @copyright (c) 2012-2023 seditio.by
- */
+* PageList Plugin / Setup
+*
+* @package PageList
+* @author Vladimir Sibirov / Dmitri Beliavski
+* @copyright (c) 2012-2023 seditio.by
+*/
 
 defined('COT_CODE') or die('Wrong URL');

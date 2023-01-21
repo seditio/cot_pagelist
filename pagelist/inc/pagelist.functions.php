@@ -1,10 +1,11 @@
 <?php
 /**
- * Functions for the PageList Plugin
- *
- * @package PageList
- * @copyright (c) 2012-2023 seditio.by
- */
+* PageList Plugin / Functions
+*
+* @package PageList
+* @author Vladimir Sibirov / Dmitri Beliavski
+* @copyright (c) 2012-2023 seditio.by
+*/
 
 defined('COT_CODE') or die('Wrong URL');
 
@@ -12,11 +13,12 @@ require_once cot_incfile('page', 'module');
 
 /**
  * Returns condition as SQL string
- * @param  string $cc_mode Selection mode: single, black or white
- * @param  string $cc_cats Cat (or cats semicolon separated)
- * @return string           Condition as SQL string
+ * @param		string	$cc_mode Selection mode: single, array, black or white
+ * @param		string	$cc_cats Category (or categories in double quotes, comma separated)
+ * @param		bool		$cc_subs Include subcategories
+ * @return	string	Condition as SQL string
  */
-function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_sub = TRUE) {
+function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_subs) {
 
 	global $db, $structure;
 
@@ -25,43 +27,20 @@ function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_sub = TRUE) {
 		$cc_cats = str_replace(' ', '', $cc_cats);
 
 		if ($cc_mode == 'single') {
-			$cc_cats = cot_structure_children('page', $cc_cats, $cc_sub);
-			if (count($cc_cats) > 1) {
-				$cc_where = "AND page_cat IN ('" . implode("','", $cc_cats) . "')";
-			}
-			else {
-				$cc_where = "AND page_cat = " . $db->quote($cc_cats[0]);
-			}
+			$cc_cats = cot_structure_children('page', $cc_cats, $cc_subs);
+			$cc_where = $cc_subs ? $cc_where = ' AND page_cat IN ("'.implode('","', $cc_cats).'")' : $cc_where = ' AND page_cat = '.$db->quote($cc_cats[0]);
 		}
 
     elseif ($cc_mode == 'array') {
-      $cc_cats = implode(',', $cc_cats);
-      $cc_cats = '"'.$cc_cats.'"';
-  		$cc_cats = str_replace(',', '","', $cc_cats);
-      $cc_where = "AND page_id IN ($cc_cats)";
+      $cc_cats = '"'.implode('","', $cc_cats).'"';
+      $cc_where = " AND page_cat IN ($cc_cats)";
     }
 
 		else {
-			if ($cc_mode == 'white') {
-				$wl = explode(';', $cc_cats);
-			}
-			else {
-				$bl = explode(';', $cc_cats);
-			}
-			$tempcats = array();
-			foreach ($structure['page'] as $code => $row) {
-				if ($cc_mode == 'black' && !in_array($code, $bl) || $cc_mode == 'white' && in_array($code, $wl)) {
-					$tempcats[] = $code;
-				}
-			}
-			if ($cc_mode == 'white') {
-				$cc_cats = array_intersect($tempcats, $wl);
-			}
-			else {
-				$cc_cats = array_diff($tempcats, $bl);
-			}
-			$cc_where = "AND page_cat IN ('" . implode("','", $cc_cats) . "')";
+			$what = ($cc_mode == 'black') ? 'NOT' : '';
+			$cc_where = " AND page_cat ".$what." IN ($cc_cats)";
 		}
+
 	}
 	return $cc_where;
 
@@ -75,13 +54,13 @@ function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_sub = TRUE) {
  * @param  string  $condition  04. Custom selection filter (SQL)
  * @param  string  $mode       05. Ctegory selection mode (single, array, white, black)
  * @param  string  $cats       06. Category [list, semicolon separated]
- * @param  boolean $sub        07. Include subcategories TRUE/FALSE
+ * @param  boolean $subs       07. Include subcategories TRUE/FALSE
  * @param  string  $pagination 08. Pagination parameter name for the URL, e.g. 'pld'. Make sure it does not conflict with other paginations.
  * @param  boolean $noself     09. Exclude the current page from the rowset for pages.
  * @param  int     $offset     10. Exclude specified number of records
  * @return string              Parsed HTML
  */
-function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $mode = '', $cats = '', $sub = TRUE, $pagination = NULL, $noself = TRUE, $offset = '0') {
+function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $mode = '', $cats = '', $subs = TRUE, $pagination = NULL, $noself = TRUE, $offset = '0') {
 
 	global $db, $db_pages, $env, $structure, $cot_extrafields, $cfg;
 
@@ -91,9 +70,8 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 		include $pl;
 	}
 	/* ===== */
-
-	$where_cat = cot_compilecats($mode, $cats, $sub);
-	$where_condition = (empty($condition)) ? '' : "AND $condition";
+	$where_cat = cot_compilecats($mode, $cats, (bool)$subs);
+	$where_condition = (empty($condition)) ? '' : " AND $condition";
 
 	if (($noself === TRUE) && defined('COT_PAGES') && !defined('COT_LIST')) {
 		global $id;
@@ -111,7 +89,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 	// Display the items
 	$t = new XTemplate(cot_tplfile($tpl, 'plug'));
 
-	//
+	// Users Module Support
 	if ($cfg['plugin']['pagelist']['users']) {
 		global $db_users;
 		$pagelist_join_columns .= ' , u.* ';
@@ -131,23 +109,31 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 	}
 	/* ===== */
 
-	$sql_order = empty($order) ? '' : "ORDER BY $order";
+	$sql_order = empty($order) ? '' : " ORDER BY $order";
 
 	$d = $d + $offset;
 	$sql_limit = ($items > 0) ? "LIMIT $d, $items" : '';
 
 	$res = $db->query("SELECT p.* $pagelist_join_columns
-		FROM $db_pages AS p
+		FROM $db_pages
+		AS p
 		$pagelist_join_tables
-		WHERE page_state='0' $where_cat $where_condition
-		$sql_order $sql_limit");
+		WHERE page_state='0'
+		$where_cat
+		$where_condition
+		$sql_order
+		$sql_limit");
 
-	$totalitems = $db->query("SELECT COUNT(*) FROM $db_pages AS p $pagelist_join_tables WHERE page_state='0' $where_cat $where_condition")->fetchColumn();
+	$totalitems = $db->query("SELECT COUNT(*)
+		FROM $db_pages
+		AS p $pagelist_join_tables
+		WHERE page_state='0'
+		$where_cat
+		$where_condition")->fetchColumn();
 
 	$jj = 1;
 	while ($row = $res->fetch()) {
 		$t->assign(cot_generate_pagetags($row, 'PAGE_ROW_'));
-
 		$t->assign(array(
 			'PAGE_ROW_NUM'     => $jj,
 			'PAGE_ROW_ODDEVEN' => cot_build_oddeven($jj),
@@ -169,7 +155,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 		$jj++;
 	}
 
-	// Render pagination
+	// Render pagination if needed
 	if (!is_null($pagination)) {
 		$url_area = defined('COT_PLUG') ? 'plug' : $env['ext'];
 		if (defined('COT_LIST')) {
@@ -180,11 +166,17 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 			global $al, $id, $pag;
 			$url_params = empty($al) ? array('c' => $pag['page_cat'], 'id' => $id) :  array('c' => $pag['page_cat'], 'al' => $al);
 		}
+		elseif (defined('COT_ADMIN')) {
+      $url_area = 'admin';
+      global $m, $p, $a;
+			$url_params = array('m' => $m, 'p' => $p, 'a' => $a);
+		}
 		else {
 			$url_params = array();
 		}
 		$url_params[$pagination] = $durl;
 		$pagenav = cot_pagenav($url_area, $url_params, $d, $totalitems, $items, $pagination);
+
 		// Assign pagination tags
 		$t->assign(array(
 			'PAGE_TOP_PAGINATION'  => $pagenav['main'],

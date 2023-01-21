@@ -6,11 +6,12 @@ Hooks=global
 ==================== */
 
 /**
- * Global Part for the PageList Plugin
- *
- * @package PageList
- * @copyright (c) 2012-2023 seditio.by
- */
+* PageList Plugin / Global Part
+*
+* @package PageList
+* @author Vladimir Sibirov / Dmitri Beliavski
+* @copyright (c) 2012-2023 seditio.by
+*/
 
 defined('COT_CODE') or die('Wrong URL');
 require_once cot_incfile('pagelist', 'plug');
