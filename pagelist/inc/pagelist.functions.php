@@ -18,7 +18,7 @@ require_once cot_incfile('page', 'module');
  * @param		bool		$cc_subs Include subcategories
  * @return	string	Condition as SQL string
  */
-function cot_compilecats($cc_mode = '', $cc_cats = '', $cc_subs = '') {
+function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
 
 	global $db, $structure;
 
