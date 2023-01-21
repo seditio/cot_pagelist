@@ -1,10 +1,11 @@
-<?php 
+<?php
 /**
- * Russian Localization for the PageList Plugin
- *
- * @package PageList
- * @copyright (c) 2012-2023 seditio.by
- */
+* PageList Plugin / Russian Locale
+*
+* @package PageList
+* @author Vladimir Sibirov / Dmitri Beliavski
+* @copyright (c) 2012-2023 seditio.by
+*/
 
 defined('COT_CODE') or die('Wrong URL');
 
