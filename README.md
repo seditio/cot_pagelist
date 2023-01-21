@@ -1,10 +1,10 @@
-# cot-pagelist
+# cot_pagelist
 Rendering page widgets anywhere
 
 ## Использование:
 
 ```html
-{PHP|cot_pagelist($tpl, $items, $order, $condition, $cat, $blacklist, $whitelist, $sub, $pagination, $noself, $offset)}
+{PHP|cot_pagelist($tpl, $items, $order, $condition, $mode, $cats, $subs, $pagination, $noself, $offset)}
 ```
 
 Назначение параметров (в скобках значение по умолчанию -- если не указано пользователем):
@@ -13,9 +13,9 @@ Rendering page widgets anywhere
 * $order указывает на сортировку в формате MYSQL, например `page_date ASC` (по умолчанию без сортировки)
 * $condition указывает на условие в формате MYSQL, например, `page_ownerid = 1` (по умолчанию без условия)
 * $mode указывает на режим выбора категорий (single, array, white, black)
-* $cats указывает на категорию (категории) страниц (по умолчанию без категории)
-* $sub указывает на необходимость вывода страниц из подразделов (по умолчанию true)
-* $pagination указывает на имя переменной вывода постраничного списка (по умолчанию pld)
+* $cats указывает на категорию (категории) страниц (указывать в двойных кавычках и через запятую)
+* $subs указывает на необходимость вывода страниц из подразделов (по умолчанию true)
+* $pagination включает постраничный вывод и определяет имя переменной вывода постраничного списка (по умолчанию false)
 * $noself указывает на необходимость включать в вывод страницу, из которой осуществляется запрос (по умолчанию false)
 * $offset указывает на необходимость сдвига, т.е. исключения определенного количества предстоящих страниц -- например, для вывода всех, кроме первой страницы (по умолчанию сдвиг отсутствует)
 
@@ -30,15 +30,25 @@ Rendering page widgets anywhere
 ### Поддержка плагина Comments
 
 Для использования тегов плагина Comments необходимо:
-* добавить в файл темы (например, nemesis.php) строку `require_once cot_incfile('comments', 'plug');`
+* подключить функции комментариев `require_once cot_incfile('comments', 'plug');`
 * в блоке `PAGE_ROW` использовать конструкцию типа `{PAGE_ROW_ID|cot_comments_count('page', $this)|cot_declension($this, 'Comments')}`
 
 ## История:
 
-вер. 2.02 -- исправление бага, связанного с генерацией user tags
+вер. 3.30
+1. Исправление ошибки паджинации в админке
+2. Упростил вспомогательную функцию - генератор оператора WHERE
+3. Коды категорий теперь необходимо указывать через запятую и брать в двойные кавычки
+4. Чистка кода
 
-вер. 2.01 (Изменения по сравнению с первым релизом от Trustmaster):
+вер. 3.00 
+Очередная полуфинальная версия
 
+вер. 2.02 
+Исправление бага, связанного с генерацией user tags
+
+вер. 2.01
+Изменения по сравнению с первым релизом от Trustmaster):
 1. Удалил опцию вывода количества комментариев -- проще делать это по месту при помощи конструкций вида {PAGE_ROW_ID|cot_comments_count('page', $this)|cot_declension($this, 'Comments')}
 2. Опционизировал поддержку user tags (в некоторых проектах это не требовалось вообще)
 3. Добавил поддержку i18n (в некоторых проектах требовалось)
@@ -46,21 +56,6 @@ Rendering page widgets anywhere
 5. Добавил поддержку Star Ratings (опционально, на всякий случай)
 6. Добавил параметр `$offset`
 
-вер. 3.00 -- очередная полуфинальная версия
-
 ===
 
 ## How to Use:
-
-## Version History:
-
-ver. 2.02 -- bug fix related to the user tags generation
-
-ver. 2.01 (Changes as compared to the initial release by Trustmaster):
-
-1. Removed comments parts -- can be replaced using {PAGE_ROW_ID|cot_comments_count('page', $this)|cot_declension($this, 'Comments')} as needed
-2. Optional user tags generation (did not need this in some projests)
-3. Added i18n support
-4. Minor cleanup
-5. Added Star Ratings plugin support (optional)
-6. Added `$offset` parameter
