@@ -13,40 +13,36 @@ require_once cot_incfile('page', 'module');
 
 /**
  * Returns condition as SQL string
- * @param		string	$cc_mode Selection mode: single, array, black or white
- * @param		string	$cc_cats Category (or categories in double quotes, comma separated)
- * @param		bool		$cc_subs Include subcategories
- * @return	string	Condition as SQL string
+ * @param string $cc_mode Selection mode: single, array, black or white
+ * @param string $cc_cats Category (or categories, comma separated)
+ * @param bool $cc_subs Include subcategories
+ * @return string Condition as SQL string
  */
-function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
-
+function cot_compilecats($cc_mode, $cc_cats, $cc_subs)
+{
 	global $db, $structure;
 
 	if (!empty($cc_cats) && ($cc_mode == 'single' || $cc_mode == 'array' || $cc_mode == 'white' || $cc_mode == 'black')) {
-
 		$cc_cats = str_replace(' ', '', $cc_cats);
 
 		if ($cc_mode == 'single') {
 			$cc_cats = cot_structure_children('page', $cc_cats, $cc_subs);
-			$cc_where = $cc_subs ? $cc_where = ' AND page_cat IN ("'.implode('","', $cc_cats).'")' : $cc_where = ' AND page_cat = '.$db->quote($cc_cats[0]);
-		}
-
-    elseif ($cc_mode == 'array') {
-      $cc_cats = '"'.implode('","', $cc_cats).'"';
-      $cc_where = " AND page_cat IN ($cc_cats)";
-    }
-
-		else {
+			$cc_where = $cc_subs
+                ? " AND page_cat IN ('" . implode("', '", $cc_cats) . "')"
+                : " AND page_cat = '{$cc_cats[0]}'";
+		} elseif ($cc_mode == 'array') {
+          $cc_cats = '"'.implode('","', $cc_cats).'"';
+          $cc_where = " AND page_cat IN ($cc_cats)";
+        } else {
 			$what = ($cc_mode == 'black') ? 'NOT' : '';
 			$cc_where = " AND page_cat ".$what." IN ($cc_cats)";
 		}
 
-	}
-	else {
+	} else {
 		$cc_where = '';
 	}
-	return $cc_where;
 
+	return $cc_where;
 }
 
 /**
@@ -74,6 +70,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 	}
 	/* ===== */
 	$where_cat = cot_compilecats($mode, $cats, (bool)$subs);
+
 	$where_condition = (empty($condition)) ? '' : " AND $condition";
 
 	if (($noself === TRUE) && defined('COT_PAGES') && !defined('COT_LIST')) {
