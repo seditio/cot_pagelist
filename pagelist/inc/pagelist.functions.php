@@ -117,7 +117,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 
 	$sql_order = empty($order) ? '' : " ORDER BY $order";
 
-	$d = $d + $offset;
+	$d = $d + (int) $offset;
 	$sql_limit = ($items > 0) ? "LIMIT $d, $items" : '';
 
 	$res = $db->query("SELECT p.* $pagelist_join_columns
@@ -188,7 +188,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 			'PAGE_TOP_PAGINATION'  => $pagenav['main'],
 			'PAGE_TOP_PAGEPREV'    => $pagenav['prev'],
 			'PAGE_TOP_PAGENEXT'    => $pagenav['next'],
-			'PAGE_TOP_FIRST'       => $pagenav['first'],
+			'PAGE_TOP_FIRST'       => isset($pagenav['first']) ? $pagenav['first'] : '',
 			'PAGE_TOP_LAST'        => $pagenav['last'],
 			'PAGE_TOP_CURRENTPAGE' => $pagenav['current'],
 			'PAGE_TOP_TOTALLINES'  => $totalitems,
