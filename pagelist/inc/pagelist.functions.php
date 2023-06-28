@@ -68,7 +68,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 	global $db, $db_pages, $env, $structure, $cot_extrafields, $cfg;
 
 	/* === Hook === */
-	foreach (array_merge(cot_getextplugins('pagelist.first')) as $pl)
+	foreach (cot_getextplugins('pagelist.first') as $pl)
 	{
 		include $pl;
 	}
@@ -110,7 +110,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 	}
 
 	/* === Hook === */
-	foreach (array_merge(cot_getextplugins('pagelist.query')) as $pl) {
+	foreach (cot_getextplugins('pagelist.query') as $pl) {
 		include $pl;
 	}
 	/* ===== */
