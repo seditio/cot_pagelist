@@ -15,9 +15,7 @@ Hooks=pagelist.loop
 
 defined('COT_CODE') or die('Wrong URL');
 
-global $cfg;
-if ($cfg['plugin']['pagelist']['ratings'] && cot_plugin_active('ratings'))
-{
+if (Cot::$cfg['plugin']['pagelist']['ratings'] && cot_plugin_active('ratings')) {
 	require_once cot_incfile('ratings', 'plug');
 	list ($ratings_display, $ratings_average, $ratings_count) = cot_ratings_display('page', $row['page_id'], $row['page_cat'], true);
 	$t->assign(array(

@@ -14,14 +14,14 @@ defined('COT_CODE') or die('Wrong URL');
  */
 
 $L['info_name'] = '[SEDBY] PageList';
-$L['info_desc'] = 'Function to build Page module widgets';
+$L['info_desc'] = 'Function to build Page Module widgets';
 
 /**
  * Plugin Config
  */
 
-$L['cfg_users'] = 'Create tags for the Users module';
-$L['cfg_ratings'] = 'Create tags for the Star Ratings plugin';
+$L['cfg_users'] = 'Create tags for the Users Module';
+$L['cfg_ratings'] = 'Create tags for the Star Ratings Plugin';
 
 /**
  * Plugin Tools

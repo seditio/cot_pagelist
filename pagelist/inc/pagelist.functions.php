@@ -12,6 +12,20 @@ defined('COT_CODE') or die('Wrong URL');
 require_once cot_incfile('page', 'module');
 
 /**
+ * Converts multidimensional array to string
+ * @param		string	$glue Separator
+ * @param		string	$array Array
+ * @return	string	List of array(s) values
+ */
+function cot_implode_all($glue, $array){
+	for ($i = 0; $i < count($array); $i++) {
+		if (@is_array($array[$i]))
+		$array[$i] = cot_implode_all ($glue, $array[$i]);
+	}
+	return implode($glue, $array);
+}
+
+/**
  * Returns condition as SQL string
  * @param		string	$cc_mode Selection mode: single, array, black or white
  * @param		string	$cc_cats Category (or categories in double quotes, comma separated)
@@ -20,33 +34,50 @@ require_once cot_incfile('page', 'module');
  */
 function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
 
-	global $db, $structure;
-
 	if (!empty($cc_cats) && ($cc_mode == 'single' || $cc_mode == 'array' || $cc_mode == 'white' || $cc_mode == 'black')) {
-
 		$cc_cats = str_replace(' ', '', $cc_cats);
 
 		if ($cc_mode == 'single') {
-			$cc_cats = cot_structure_children('page', $cc_cats, $cc_subs);
-			$cc_where = $cc_subs ? $cc_where = ' AND page_cat IN ("'.implode('","', $cc_cats).'")' : $cc_where = ' AND page_cat = '.$db->quote($cc_cats[0]);
+			if ($cc_subs == false) {
+				$cc_where = "AND page_cat = " . Cot::$db->quote($cc_cats);
+			}
+			else {
+				$cc_cats = cot_structure_children('page', $cc_cats, $cc_subs);
+				$cc_where = ($cc_cats > 1) ? "AND page_cat IN ('" . implode("','", $cc_cats) . "')" : "AND page_cat = " . Cot::$db->quote($cc_cats[0]);
+			}
 		}
-
     elseif ($cc_mode == 'array') {
-      $cc_cats = '"'.implode('","', $cc_cats).'"';
-      $cc_where = " AND page_cat IN ($cc_cats)";
+      if ($cc_subs == false) {
+				$cc_cats = '"'.implode('","', $cc_cats).'"';
+	      $cc_where = " AND page_cat IN ($cc_cats)";
+			}
+			else {
+				$tempcats = array();
+				foreach ($cc_cats as $value) {
+					$tempcats[] = cot_structure_children('page', $value, true);
+				}
+				$cc_where = "AND page_cat IN ('" . cot_implode_all("','", $tempcats) . "')";
+			}
     }
-
 		else {
-			$what = ($cc_mode == 'black') ? 'NOT' : '';
-			$cc_where = " AND page_cat ".$what." IN ($cc_cats)";
+			$what = ($cc_mode == 'black') ? "NOT" : "";
+			$cc_cats = explode(';', $cc_cats);
+			if ($cc_subs == false) {
+				$cc_where = "AND page_cat " . $what . " IN ('" . implode("','", $cc_cats) . "')";
+			}
+			else {
+				$tempcats = array();
+				foreach ($cc_cats as $value) {
+					$tempcats[] = cot_structure_children('page', $value, true);
+				}
+				$cc_where = "AND page_cat " . $what . " IN ('" . cot_implode_all("','", $tempcats) . "')";
+			}
 		}
-
 	}
 	else {
 		$cc_where = '';
 	}
 	return $cc_where;
-
 }
 
 /**
@@ -63,9 +94,7 @@ function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
  * @param  int     $offset     10. Exclude specified number of records
  * @return string              Parsed HTML
  */
-function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $mode = '', $cats = '', $subs = FALSE, $pagination = NULL, $noself = FALSE, $offset = 0) {
-
-	global $db, $db_pages, $env, $structure, $cot_extrafields, $cfg;
+function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '', $mode = '', $cats = '', $subs = FALSE, $pagination = NULL, $noself = FALSE, $offset = 0, $ajax_block = 'pagelist_ajax', $cache_name = '', $cache_ttl = '') {
 
 	/* === Hook === */
 	foreach (array_merge(cot_getextplugins('pagelist.first')) as $pl)
@@ -73,6 +102,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 		include $pl;
 	}
 	/* ===== */
+
 	$where_cat = cot_compilecats($mode, $cats, (bool)$subs);
 	$where_condition = (empty($condition)) ? '' : " AND $condition";
 
@@ -96,17 +126,15 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 	$pagelist_join_tables = '';
 
 	// Users Module Support
-	if ($cfg['plugin']['pagelist']['users']) {
-		global $db_users;
+	if (Cot::$cfg['plugin']['pagelist']['users']) {
 		$pagelist_join_columns .= ' , u.* ';
-		$pagelist_join_tables .= ' LEFT JOIN '.$db_users.' AS u ON u.user_id = p.page_ownerid ';
+		$pagelist_join_tables .= ' LEFT JOIN '.Cot::$db->users.' AS u ON u.user_id = p.page_ownerid ';
 	}
 
 	// Add i18n features if installed
 	if (cot_plugin_active('i18n')) {
-		global $db_i18n_pages, $i18n_locale;
 		$pagelist_join_columns .= ' , i18n.* ';
-		$pagelist_join_tables .= ' LEFT JOIN '.$db_i18n_pages.' AS i18n ON i18n.ipage_id=p.page_id AND i18n.ipage_locale="'.$i18n_locale.'" AND i18n.ipage_id IS NOT NULL ';
+		$pagelist_join_tables .= ' LEFT JOIN '.Cot::$db->i18n_pages.' AS i18n ON i18n.ipage_id=p.page_id AND i18n.ipage_locale="'.Cot::$db->i18n_locale.'" AND i18n.ipage_id IS NOT NULL ';
 	}
 
 	/* === Hook === */
@@ -120,8 +148,8 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 	$d = $d + $offset;
 	$sql_limit = ($items > 0) ? "LIMIT $d, $items" : '';
 
-	$res = $db->query("SELECT p.* $pagelist_join_columns
-		FROM $db_pages
+	$res = Cot::$db->query("SELECT p.* $pagelist_join_columns
+		FROM " . Cot::$db->pages . "
 		AS p
 		$pagelist_join_tables
 		WHERE page_state='0'
@@ -130,8 +158,8 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 		$sql_order
 		$sql_limit");
 
-	$totalitems = $db->query("SELECT COUNT(*)
-		FROM $db_pages
+	$totalitems = Cot::$db->query("SELECT COUNT(*)
+		FROM " . Cot::$db->pages . "
 		AS p $pagelist_join_tables
 		WHERE page_state='0'
 		$where_cat
@@ -146,7 +174,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 			'PAGE_ROW_RAW'     => $row
 		));
 
-		if ($cfg['plugin']['pagelist']['users']) {
+		if (Cot::$cfg['plugin']['pagelist']['users']) {
 			$t->assign(cot_generate_usertags($row, 'PAGE_ROW_OWNER_'));
 		}
 
@@ -163,7 +191,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $condition = '
 
 	// Render pagination if needed
 	if (!is_null($pagination)) {
-		$url_area = defined('COT_PLUG') ? 'plug' : $env['ext'];
+		$url_area = defined('COT_PLUG') ? 'plug' : Cot::$env['ext'];
 		if (defined('COT_LIST')) {
 			global $list_url_path;
 			$url_params = $list_url_path;
