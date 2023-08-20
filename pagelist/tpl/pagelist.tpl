@@ -1,7 +1,7 @@
 <!-- BEGIN: MAIN -->
 <ul class="list-unstyled">
 <!-- BEGIN: PAGE_ROW -->
-	<li>
+	<li class="{PAGE_ROW_ODDEVEN}">
 		<a href={PAGE_ROW_URL} class="d-block">{PAGE_ROW_NUM}. {PAGE_ROW_SHORTTITLE}</a>
 		<p class="small mb-0">{PAGE_ROW_DATE}</p>
 	</li>
