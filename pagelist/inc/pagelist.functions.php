@@ -166,10 +166,6 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		$res = Cot::$db->query($query);
 		$jj = 1;
 
-		/* === Hook - Part 1 : Install === */
-		$extp = cot_getextplugins('pagelist.loop');
-		/* ============ */
-
 		while ($row = $res->fetch()) {
 		  $t->assign(cot_generate_pagetags($row, 'PAGE_ROW_'));
 
@@ -182,11 +178,11 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 				'PAGE_ROW_RAW'     => $row
 			));
 
-			/* === Hook - Part 2 : Call === */
-			foreach ($extp as $pl) {
+			/* === Hook === */
+			foreach (cot_getextplugins('pagelist.loop') as $pl) {
 				include $pl;
 			}
-			/* ============ */
+			/* ===== */
 
 		  $t->parse("MAIN.PAGE_ROW");
 		  $jj++;
