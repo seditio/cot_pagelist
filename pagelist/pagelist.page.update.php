@@ -6,10 +6,10 @@ Hooks=page.add.add.done, page.edit.delete.done, page.edit.update.done
 ==================== */
 
 /**
-* Pagelist Plugin / Page add / update / delete
+* Pagelist Plugin / Page add / edit / delete actions
 *
-* @package Pagelist
-* @author Vladimir Sibirov / Dmitri Beliavski
+* @package pagelist
+* @author Vladimir Sibirov & Dmitri Beliavski
 * @copyright (c) 2012-2023 seditio.by
 */
 

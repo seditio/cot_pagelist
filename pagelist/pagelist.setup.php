@@ -17,18 +17,24 @@ Lock_members=W12345A
 Requires_modules=page
 [END_COT_EXT]
 [BEGIN_COT_EXT_CONFIG]
-ajax=00:radio::0:Use AJAX
-pagelist_gentags=01:separator:::
-users=02:radio::0:Generate User tags
-ratings=03:radio::0:Generate Ratings tags
+
+useajax=00:separator:::
+ajax=01:radio::0:Use AJAX
+encrypt_ajax_urls=02:radio::0:Encrypt ajax URLs
+encrypt_key=03:string::1234567890123456:Secret Key
+encrypt_iv=04:string::1234567890123456:Initialization Vector
+
+gentags=20:separator:::
+ratings=21:radio::0:Generate Ratings tags
+users=22:radio::0:Generate User tags
 [END_COT_EXT_CONFIG]
 ==================== */
 
 /**
 * Pagelist Plugin / Setup
 *
-* @package Pagelist
-* @author Vladimir Sibirov / Dmitri Beliavski
+* @package pagelist
+* @author Vladimir Sibirov & Dmitri Beliavski
 * @copyright (c) 2012-2023 seditio.by
 */
 

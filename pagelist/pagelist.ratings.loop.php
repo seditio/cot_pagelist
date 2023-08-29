@@ -6,10 +6,10 @@ Hooks=pagelist.loop
 ==================== */
 
 /**
-* Pagelist Plugin / Ratings Support
+* Pagelist Plugin / Loop for ratings
 *
-* @package Pagelist
-* @author Vladimir Sibirov / Dmitri Beliavski
+* @package pagelist
+* @author Vladimir Sibirov & Dmitri Beliavski
 * @copyright (c) 2012-2023 seditio.by
 */
 

@@ -1,9 +1,9 @@
 <?php
 /**
-* Pagelist Plugin / English Locale
+* Pagelist Plugin / EN Locale
 *
-* @package Pagelist
-* @author Vladimir Sibirov / Dmitri Beliavski
+* @package pagelist
+* @author Vladimir Sibirov & Dmitri Beliavski
 * @copyright (c) 2012-2023 seditio.by
 */
 
@@ -20,10 +20,17 @@ $L['info_desc'] = 'Function to build Page Module widgets';
  * Plugin Config
  */
 
-$L['cfg_ajax'] = 'Use ajax for pagination';
-$L['cfg_pagelist_gentags'] = 'Generate tags:';
-$L['cfg_users'] = 'Create tags for the Users Module';
-$L['cfg_ratings'] = 'Create tags for the Star Ratings Plugin';
+$L['cfg_useajax'] = 'Use AJAX:';
+$L['cfg_ajax'] = 'Use AJAX for pagination';
+$L['cfg_ajax_hint'] = 'Works only with $ajax_block and $cfg[\'turnajax\']';
+$L['cfg_encrypt_ajax_urls'] = 'Encode AJAX pagination URLs';
+$L['cfg_encrypt_ajax_urls_hint'] = 'Works only with AJAX pagination, recommended for live projects and with $extra argument used with AJAX';
+$L['cfg_encrypt_key'] = 'Secret key';
+$L['cfg_encrypt_iv'] = 'Initialization vector';
+
+$L['cfg_gentags'] = 'Генерация тегов:';
+$L['cfg_users'] = 'Создавать теги для модуля Users';
+$L['cfg_ratings'] = 'Создавать теги для плагина Star Ratings';
 
 /**
  * Plugin Tools
