@@ -67,7 +67,7 @@ function cot_implode_all($glue, $array) {
  */
 function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
 
-	if (!empty($cc_cats) && ($cc_mode == 'single' || $cc_mode == 'array' || $cc_mode == 'white' || $cc_mode == 'black')) {
+	if (!empty($cc_cats) && ($cc_mode == 'single' || $cc_mode == 'array_white' || $cc_mode == 'array_black' || $cc_mode == 'white' || $cc_mode == 'black')) {
 		$cc_cats = str_replace(' ', '', $cc_cats);
 
 		if ($cc_mode == 'single') {
@@ -79,20 +79,21 @@ function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
 				$cc_where = ($cc_cats > 1) ? "page_cat IN ('" . implode("','", $cc_cats) . "')" : "AND page_cat = " . Cot::$db->quote($cc_cats[0]);
 			}
 		}
-    elseif ($cc_mode == 'array') {
+    elseif (($cc_mode == 'array_white') || $cc_mode == 'array_black') {
+      $what = ($cc_mode == 'array_black') ? "NOT" : "";
       if ($cc_subs == false) {
 				$cc_cats = '"'.implode('","', $cc_cats).'"';
-	      $cc_where = "page_cat IN ($cc_cats)";
+	      $cc_where = "page_cat " . $what . " IN ($cc_cats)";
 			}
 			else {
 				$tempcats = array();
 				foreach ($cc_cats as $value) {
 					$tempcats[] = cot_structure_children('page', $value, true);
 				}
-				$cc_where = "page_cat IN ('" . cot_implode_all("','", $tempcats) . "')";
+				$cc_where = "page_cat " . $what . " IN ('" . cot_implode_all("','", $tempcats) . "')";
 			}
     }
-		else {
+		elseif (($cc_mode == 'white') || $cc_mode == 'black') {
 			$what = ($cc_mode == 'black') ? "NOT" : "";
 			$cc_cats = explode(';', $cc_cats);
 			if ($cc_subs == false) {
