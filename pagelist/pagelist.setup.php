@@ -26,7 +26,7 @@ encrypt_iv=04:string::1234567890123456:Initialization Vector
 
 gentags=20:separator:::
 ratings=21:radio::0:Generate Ratings tags
-users=22:radio::0:Generate User tags
+usertags=22:radio::0:Generate User tags
 [END_COT_EXT_CONFIG]
 ==================== */
 

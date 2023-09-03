@@ -183,7 +183,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		$pagelist_join_tables = "";
 
 		// Users Module Support
-		if (Cot::$cfg['plugin']['pagelist']['users'] == 1) {
+		if (Cot::$cfg['plugin']['pagelist']['usertags'] == 1) {
       $db_users = Cot::$db->users;
 			$pagelist_join_columns .= " , u.* ";
 			$pagelist_join_tables .= " LEFT JOIN $db_users AS u ON u.user_id = p.page_ownerid ";
@@ -210,7 +210,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		while ($row = $res->fetch()) {
 		  $t->assign(cot_generate_pagetags($row, 'PAGE_ROW_'));
 
-		  if (Cot::$cfg['plugin']['pagelist']['users'] == 1)
+		  if (Cot::$cfg['plugin']['pagelist']['usertags'] == 1)
 		    $t->assign(cot_generate_usertags($row, 'PAGE_ROW_OWNER_'));
 
 			$t->assign(array(
@@ -231,7 +231,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 
 		// Render pagination if needed
 		if (!empty($pagination)) {
-			$totalitems = Cot::$db->query("SELECT COUNT(*) FROM $db_pages $sql_state $sql_cond")->fetchColumn();
+			$totalitems = Cot::$db->query("SELECT p.* FROM $db_pages AS p $sql_state $sql_cond")->rowCount();
 
       $url_area = defined('COT_PLUG') ? 'plug' : Cot::$env['ext'];
 
