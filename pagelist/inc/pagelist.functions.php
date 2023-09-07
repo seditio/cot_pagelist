@@ -13,106 +13,7 @@ defined('COT_CODE') or die('Wrong URL');
 define('SEDBY_PAGELIST_REALM', '[SEDBY] Pagelist');
 
 require_once cot_incfile('page', 'module');
-
-/**
- * Encrypts or decrypts string
- *
- * @param		string	$action	01.	Action (encrypt || decrypt)
- * @param		string	$string	02.	String to encrypt / decrypt
- * @param		string	$key		03. Secret key
- * @param		string	$iv			04. Initialization vector
- * @param		string	$method	05. Encryption method (optional)
- * @return	string					Encrypted / decrypted string
- */
- if (!function_exists('cot_encrypt_decrypt')) {
-	function cot_encrypt_decrypt($action, $string, $key, $iv, $method = '') {
-		$method = empty($method) ? 'AES-256-CBC' : $method;
-		$key = hash('sha256', $key);
-		$iv = substr(hash('sha256', $iv), 0, 16);
-
-		if ($action == 'encrypt') {
-			$output = openssl_encrypt($string, $method, $key, 0, $iv);
-			$output = base64_encode($output);
-		}
-		elseif ($action == 'decrypt') {
-			$output = base64_decode($string);
-			$output = openssl_decrypt($output, $method, $key, 0, $iv);
-		}
-		return $output;
-	}
- }
-
-/**
- * Converts multidimensional array to string
- *
- * @param		string	$glue		01. Separator
- * @param		string	$array	02. Array
- * @return	string					List of array(s) values
- */
-function cot_implode_all($glue, $array) {
-	for ($i = 0; $i < count($array); $i++) {
-		if (@is_array($array[$i]))
-		  $array[$i] = cot_implode_all($glue, $array[$i]);
-	}
-	return implode($glue, $array);
-}
-
-/**
- * Returns condition as SQL string
- *
- * @param		string	$cc_mode	01. Selection mode: single, array, black or white
- * @param		string	$cc_cats	02. Category (or categories in double quotes, comma separated)
- * @param		bool		$cc_subs	03. Include subcategories
- * @return	string						Condition as SQL string
- */
-function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
-
-	if (!empty($cc_cats) && ($cc_mode == 'single' || $cc_mode == 'array_white' || $cc_mode == 'array_black' || $cc_mode == 'white' || $cc_mode == 'black')) {
-		$cc_cats = str_replace(' ', '', $cc_cats);
-
-		if ($cc_mode == 'single') {
-			if ($cc_subs == false) {
-				$cc_where = "page_cat = " . Cot::$db->quote($cc_cats);
-			}
-			else {
-				$cc_cats = cot_structure_children('page', $cc_cats, $cc_subs);
-				$cc_where = ($cc_cats > 1) ? "page_cat IN ('" . implode("','", $cc_cats) . "')" : "AND page_cat = " . Cot::$db->quote($cc_cats[0]);
-			}
-		}
-    elseif (($cc_mode == 'array_white') || $cc_mode == 'array_black') {
-      $what = ($cc_mode == 'array_black') ? "NOT" : "";
-      if ($cc_subs == false) {
-				$cc_cats = '"'.implode('","', $cc_cats).'"';
-	      $cc_where = "page_cat " . $what . " IN ($cc_cats)";
-			}
-			else {
-				$tempcats = array();
-				foreach ($cc_cats as $value) {
-					$tempcats[] = cot_structure_children('page', $value, true);
-				}
-				$cc_where = "page_cat " . $what . " IN ('" . cot_implode_all("','", $tempcats) . "')";
-			}
-    }
-		elseif (($cc_mode == 'white') || $cc_mode == 'black') {
-			$what = ($cc_mode == 'black') ? "NOT" : "";
-			$cc_cats = explode(';', $cc_cats);
-			if ($cc_subs == false) {
-				$cc_where = "page_cat " . $what . " IN ('" . implode("','", $cc_cats) . "')";
-			}
-			else {
-				$tempcats = array();
-				foreach ($cc_cats as $value) {
-					$tempcats[] = cot_structure_children('page', $value, true);
-				}
-				$cc_where = "page_cat " . $what . " IN ('" . cot_implode_all("','", $tempcats) . "')";
-			}
-		}
-	}
-	else
-		$cc_where = '';
-
-	return $cc_where;
-}
+require_once cot_incfile('pagelist', 'plug', 'functions.extra');
 
 /**
  * Generates PageList widget
@@ -133,9 +34,15 @@ function cot_compilecats($cc_mode, $cc_cats, $cc_subs) {
  */
 function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $mode = '', $cats = '', $subs = 0, $noself = 0, $offset = 0, $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
 
-	$cache_name = (!empty($cache_name)) ? str_replace(' ', '_', $cache_name) : '';
+  $enableAjax = $enableCache = $enablePagination = false;
 
-	if (Cot::$cache && !empty($cache_name) && Cot::$cache->db->exists($cache_name, SEDBY_PAGELIST_REALM))
+  // Condition shortcut
+  if (Cot::$cache && !empty($cache_name) && ((int)$cache_ttl > 0)) {
+    $enableCache = true;
+    $cache_name = str_replace(' ', '_', $cache_name);
+  }
+
+	if ($enableCache && Cot::$cache->db->exists($cache_name, SEDBY_PAGELIST_REALM))
 		$output = Cot::$cache->db->get($cache_name, SEDBY_PAGELIST_REALM);
 	else {
 
@@ -145,7 +52,14 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		}
 		/* ===== */
 
-		if (Cot::$cfg['plugin']['pagelist']['encrypt_ajax_urls'] == 1) {
+    // Condition shortcuts
+    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['pagelist']['ajax']) && !empty($ajax_block))
+      $enableAjax = true;
+
+    if (!empty($pagination) && ((int)$items > 0))
+      $enablePagination = true;
+
+		if ($enableAjax && Cot::$cfg['plugin']['pagelist']['encrypt_ajax_urls']) {
 			$h = $tpl . ',' . $items . ',' . $order. ',' . $extra . ',' . $mode . ',' . $cats . ',' . $subs . ',' . $noself . ',' . $offset . ',' . $pagination . ',' . $ajax_block . ',' . $cache_name . ',' . $cache_ttl;
 			$h = cot_encrypt_decrypt('encrypt', $h, Cot::$cfg['plugin']['pagelist']['encrypt_key'], Cot::$cfg['plugin']['pagelist']['encrypt_iv']);
       $h = str_replace('=', '', $h);
@@ -154,36 +68,38 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
     $db_pages = Cot::$db->pages;
 
 		// Display the items
+    (!isset($tpl) || empty($tpl)) && $tpl = 'pagelist';
 		$t = new XTemplate(cot_tplfile($tpl, 'plug'));
 
-		// Get pagination if necessary
-		if (!empty($pagination))
-			list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
-		else
-			$d = 0;
+    // Get pagination if necessary
+    if ($enablePagination)
+      list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
+    else
+      $d = 0;
 
     // Compile items number
-		$d = $d + $offset;
-		$sql_limit = ($items > 0) ? "LIMIT $d, $items" : "";
+    ((int)$offset <= 0) && $offset = 0;
+    $d = $d + (int)$offset;
+    $sql_limit = ($items > 0) ? "LIMIT $d, $items" : "";
 
     // Compile order
 		$sql_order = empty($order) ? "" : " ORDER BY $order";
 
+    // Compile all conditions
     $sql_state = "WHERE page_state = 0";
-
-		$sql_cond = cot_compilecats($mode, $cats, (bool)$subs);
-		$sql_cond = empty($sql_cond) ? "" : " AND " . $sql_cond;
-
-		$sql_cond .= (empty($extra)) ? "" : " AND $extra";
-
-		if (($noself == true) && defined('COT_PAGES') && !defined('COT_LIST'))
-		  $sql_cond .= " AND page_id != " . Cot::$id;
+		$sql_cats = (empty($mode)) ? "" : " AND " . cot_compilecats($mode, $cats, (bool)$subs);
+		$sql_extra = (empty($extra)) ? "" : " AND " . $extra;
+		if (($noself == true) && defined('COT_PAGES') && !defined('COT_LIST')) {
+      global $id;
+      $sql_noself = " AND page_id != " . $id;
+    }
+    $sql_cond = $sql_state . $sql_cats . $sql_extra . $sql_noself;
 
 		$pagelist_join_columns = "";
 		$pagelist_join_tables = "";
 
 		// Users Module Support
-		if (Cot::$cfg['plugin']['pagelist']['usertags'] == 1) {
+		if (Cot::$cfg['plugin']['pagelist']['usertags']) {
       $db_users = Cot::$db->users;
 			$pagelist_join_columns .= " , u.* ";
 			$pagelist_join_tables .= " LEFT JOIN $db_users AS u ON u.user_id = p.page_ownerid ";
@@ -203,14 +119,14 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		}
 		/* ===== */
 
-		$query = "SELECT p.* $pagelist_join_columns FROM $db_pages AS p $pagelist_join_tables $sql_state $sql_cond $sql_order $sql_limit";
+		$query = "SELECT p.* $pagelist_join_columns FROM $db_pages AS p $pagelist_join_tables $sql_cond $sql_order $sql_limit";
 		$res = Cot::$db->query($query);
 		$jj = 1;
 
 		while ($row = $res->fetch()) {
 		  $t->assign(cot_generate_pagetags($row, 'PAGE_ROW_'));
 
-		  if (Cot::$cfg['plugin']['pagelist']['usertags'] == 1)
+		  if (Cot::$cfg['plugin']['pagelist']['usertags'])
 		    $t->assign(cot_generate_usertags($row, 'PAGE_ROW_OWNER_'));
 
 			$t->assign(array(
@@ -230,11 +146,10 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		}
 
 		// Render pagination if needed
-		if (!empty($pagination)) {
-			$totalitems = Cot::$db->query("SELECT p.* FROM $db_pages AS p $sql_state $sql_cond")->rowCount();
+		if ($enablePagination) {
+			$totalitems = Cot::$db->query("SELECT p.* FROM $db_pages AS p $sql_cond")->rowCount();
 
       $url_area = defined('COT_PLUG') ? 'plug' : Cot::$env['ext'];
-
 			if (defined('COT_LIST')) {
 				global $list_url_path;
 				$url_params = $list_url_path;
@@ -254,13 +169,12 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 			}
 			else
 				$url_params = array();
-
 			$url_params[$pagination] = $durl;
 
-			if ((Cot::$cfg['turnajax'] == 1) && (Cot::$cfg['plugin']['pagelist']['ajax'] == 1) && !empty($ajax_block)) {
+			if ($enableAjax) {
 				$ajax_mode = true;
 				$ajax_plug = 'plug';
-				if (Cot::$cfg['plugin']['pagelist']['encrypt_ajax_urls'] == 1)
+				if (Cot::$cfg['plugin']['pagelist']['encrypt_ajax_urls'])
 					$ajax_plug_params = "r=pagelist&h=$h";
 				else
 					$ajax_plug_params = "r=pagelist&tpl=$tpl&items=$items&order=$order&extra=$extra&mode=$mode&cats=$cats&subs=$subs&noself=$noself&offset=$offset&pagination=$pagination&ajax_block=$ajax_block&cache_name=$cache_name&cache_ttl=$cache_ttl";
@@ -286,8 +200,15 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		  ));
 		}
 
-		if ($jj==1)
-			$t->parse("MAIN.NONE");
+    // Assign service tags
+    if ((!$enableCache) && (Cot::$usr['maingrp'] == 5)) {
+      $t->assign(array(
+        'PAGE_TOP_QUERY' => $query,
+        'PAGE_TOP_RES' => $res,
+      ));
+    }
+
+		($jj==1) && $t->parse("MAIN.NONE");
 
 		/* === Hook === */
 		foreach (cot_getextplugins('pagelist.tags') as $pl) {
@@ -298,7 +219,7 @@ function cot_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '', $
 		$t->parse();
 		$output = $t->text();
 
-		if (Cot::$cache && ($jj > 1) && empty($pagination) && !empty($cache_name) && !empty($cache_ttl) && ($cache_ttl > 0))
+		if (($jj > 1) && $enableCache && !$enablePagination)
 		Cot::$cache->db->store($cache_name, $output, SEDBY_PAGELIST_REALM, (int)$cache_ttl);
 	}
 	return $output;

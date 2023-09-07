@@ -9,8 +9,8 @@
 </ul>
 
 <!-- IF {PAGE_TOP_PAGINATION} -->
-<nav class="mt-1" aria-label="Pagelist Pagination">
-	<ul class="pagination pagination-sm justify-content-left mb-0">
+<nav aria-label="Pagelist Pagination">
+	<ul class="pagination pagination-sm justify-content-center">
 		{PAGE_TOP_PAGEPREV}{PAGE_TOP_PAGINATION}{PAGE_TOP_PAGENEXT}
 	</ul>
 </nav>
