@@ -23,7 +23,7 @@ foreach (array_merge(cot_getextplugins('pagelist.ajax.first')) as $pl) {
 
 if (Cot::$cfg['plugin']['pagelist']['encrypt_ajax_urls'] == 1) {
   $params = cot_import('h', 'G', 'TXT');
-  $params = cot_encrypt_decrypt('decrypt', $params, Cot::$cfg['plugin']['pagelist']['encrypt_key'], Cot::$cfg['plugin']['pagelist']['encrypt_iv']);
+  $params = sedby_encrypt_decrypt('decrypt', $params, Cot::$cfg['plugin']['pagelist']['encrypt_key'], Cot::$cfg['plugin']['pagelist']['encrypt_iv']);
   $params = explode(',', $params);
 
   $tpl = $params[0];
@@ -57,6 +57,6 @@ else {
 }
 
 ob_clean();
-echo cot_pagelist($tpl, $items, $order, $extra, $mode, $cats, $subs, $noself, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+echo sedby_pagelist($tpl, $items, $order, $extra, $mode, $cats, $subs, $noself, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
 ob_flush();
 exit;

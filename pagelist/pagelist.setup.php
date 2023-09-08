@@ -25,8 +25,10 @@ encrypt_key=03:string::1234567890123456:Secret Key
 encrypt_iv=04:string::1234567890123456:Initialization Vector
 
 gentags=20:separator:::
-ratings=21:radio::0:Generate Ratings tags
-usertags=22:radio::0:Generate User tags
+usertags=21:radio::0:Generate User tags
+ratings=22:radio::0:Generate Ratings tags
+comments=23:radio::0:Generate Comments tags
+
 [END_COT_EXT_CONFIG]
 ==================== */
 

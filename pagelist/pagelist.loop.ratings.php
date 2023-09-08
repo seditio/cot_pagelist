@@ -21,6 +21,6 @@ if (Cot::$cfg['plugin']['pagelist']['ratings'] && cot_plugin_active('ratings')) 
 	$t->assign(array(
 		'PAGE_ROW_RATINGS_DISPLAY' => $ratings_display,
 		'PAGE_ROW_RATINGS_AVERAGE' => $ratings_average,
-		'PAGE_ROW_RATINGS_COUNT'   => $ratings_count
+		'PAGE_ROW_RATINGS_COUNT'   => $ratings_count,
 	));
 }
