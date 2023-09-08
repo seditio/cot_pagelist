@@ -9,6 +9,28 @@
 
 defined('COT_CODE') or die('Wrong URL');
 
+function cot_geturlparams() {
+  if (defined('COT_LIST')) {
+    global $list_url_path;
+    $out = $list_url_path;
+  }
+  elseif (defined('COT_PAGES')) {
+    global $urlParams;
+    $out = $urlParams;
+  }
+  elseif (defined('COT_USERS')) {
+    global $m;
+    $out = empty($m) ? array() : array('m' => $m);
+  }
+  elseif (defined('COT_ADMIN')) {
+    global $m, $p, $a;
+    $out = array('m' => $m, 'p' => $p, 'a' => $a);
+  }
+  else
+    $out = array();
+  return $out;
+}
+
 function &array_shift2(&$array) {
   if (count($array) > 0) {
     $key = key($array);
