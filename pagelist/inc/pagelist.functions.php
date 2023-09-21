@@ -13,6 +13,7 @@ defined('COT_CODE') or die('Wrong URL');
 define('SEDBY_PAGELIST_REALM', '[SEDBY] Pagelist');
 
 require_once cot_incfile('page', 'module');
+// require_once cot_incfile('pagelist', 'plug', 'rc');
 require_once cot_incfile('pagelist', 'plug', 'functions.extra');
 
 /**
@@ -131,13 +132,15 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
       $t->assign(cot_generate_pagetags($row, 'PAGE_ROW_'));
 
       if (Cot::$cfg['plugin']['pagelist']['usertags']) {
-        $t->assign(cot_generate_usertags($row, 'PAGE_ROW_OWNER_'));
+        $t->assign(cot_generate_usertags($row, 'PAGE_ROW_USER_'));
       }
 
       $t->assign(array(
-        'PAGE_ROW_NUM'     => $jj,
-        'PAGE_ROW_ODDEVEN' => cot_build_oddeven($jj),
-        'PAGE_ROW_RAW'     => $row
+        'PAGE_ROW_NUM'        => $jj,
+        'PAGE_ROW_ODDEVEN'    => cot_build_oddeven($jj),
+        'PAGE_ROW_RAW'        => $row,
+
+        'PAGE_ROW_TEXT_PLAIN' => strip_tags(cot_parse($row['page_text'])),
       ));
 
       /* === Hook - Part 2 === */

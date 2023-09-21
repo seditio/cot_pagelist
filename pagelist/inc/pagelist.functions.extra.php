@@ -10,6 +10,30 @@
 defined('COT_CODE') or die('Wrong URL');
 
 /**
+* Returns structure cats with no access
+*/
+function sedby_black_cats() {
+	$db_structure = Cot::$db->structure;
+	$noread = "";
+	$res = Cot::$db->query("SELECT DISTINCT structure_area FROM $db_structure");
+	while ($row = $res->fetch()) {
+		$authCats = cot_authCategories($row['structure_area']);
+		// Previuosly:
+		// if (!$authCats['readAll']) {
+		// 	$blocked = array_diff(array_keys(Cot::$structure[$row['structure_area']]), $authCats['read']);
+		// 	$blocked = "'" . implode("','", array_values($blocked)) . "'";
+		// 	$noread = empty($noread) ? $blocked : $noread . "," . $blocked;
+		// }
+		// Now simpler:
+		if ($authCats['readNotAllowed']) {
+			$blocked = "'" . implode("','", array_values($authCats['readNotAllowed'])) . "'";
+			$noread = empty($noread) ? $blocked : $noread . "," . $blocked;
+		}
+	}
+	return $noread;
+}
+
+/**
 * Returns URL parameters for various areas
 */
 function sedby_twocond($cond1, $cond2) {
