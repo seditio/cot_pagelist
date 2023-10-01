@@ -47,19 +47,18 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
   } else {
 
     /* === Hook === */
-    foreach (cot_getextplugins('pagelist.first') as $pl)
-    {
+    foreach (cot_getextplugins('pagelist.first') as $pl) {
       include $pl;
     }
     /* ===== */
 
     // Condition shortcuts
-    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['pagelist']['ajax']) && !empty($ajax_block)) {
-      $enableAjax = true;
+    if (!$enableCache && !empty($pagination) && ((int)$items > 0)) {
+      $enablePagination = true;
     }
 
-    if (!empty($pagination) && ((int)$items > 0)) {
-      $enablePagination = true;
+    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['pagelist']['ajax']) && !empty($ajax_block)) {
+      $enableAjax = true;
     }
 
     // DB tables shortcuts
