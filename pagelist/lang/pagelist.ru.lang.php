@@ -29,8 +29,13 @@ $L['cfg_encrypt_key'] = 'Ключ шифрования';
 $L['cfg_encrypt_iv'] = 'Вектор исполнения';
 
 $L['cfg_gentags'] = 'Генерация тегов:';
-$L['cfg_users'] = 'Создавать теги для модуля Users';
+$L['cfg_usertags'] = 'Создавать теги для модуля Users';
+$L['cfg_comments'] = 'Создавать теги для плагина Comments';
 $L['cfg_ratings'] = 'Создавать теги для плагина Star Ratings';
+
+$L['cfg_misc'] = 'Разное';
+$L['cfg_published_only'] = 'Выводить только опубликованные страницы';
+$L['cfg_published_only_hint'] = 'Иначе в аргументе $extra указывать значение поля page_state';
 
 /**
  * Plugin Tools

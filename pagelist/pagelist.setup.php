@@ -2,7 +2,7 @@
 /* ====================
 [BEGIN_COT_EXT]
 Code=pagelist
-Name=PageList Widget
+Name=[SEDBY] PageList
 Category=navigation-structure
 Description=Generates custom page lists available via {PHP|pagelist} callback
 Version=4.10b
@@ -15,6 +15,9 @@ Lock_guests=W12345A
 Auth_members=R
 Lock_members=W12345A
 Requires_modules=page
+Requires_plugins=cotlib
+Recommends_modules=
+Recommends_plugins=
 [END_COT_EXT]
 [BEGIN_COT_EXT_CONFIG]
 
@@ -26,8 +29,11 @@ encrypt_iv=04:string::1234567890123456:Initialization Vector
 
 gentags=20:separator:::
 usertags=21:radio::0:Generate User tags
-ratings=22:radio::0:Generate Ratings tags
-comments=23:radio::0:Generate Comments tags
+comments=22:radio::0:Generate Comments tags
+ratings=23:radio::0:Generate Ratings tags
+
+misc=30:separator:::
+published_only=31:radio::1:Select only published pages
 
 [END_COT_EXT_CONFIG]
 ==================== */

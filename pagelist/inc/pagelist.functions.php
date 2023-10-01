@@ -13,8 +13,7 @@ defined('COT_CODE') or die('Wrong URL');
 define('SEDBY_PAGELIST_REALM', '[SEDBY] Pagelist');
 
 require_once cot_incfile('page', 'module');
-// require_once cot_incfile('pagelist', 'plug', 'rc');
-require_once cot_incfile('pagelist', 'plug', 'functions.extra');
+require_once cot_incfile('cotlib', 'plug');
 
 /**
 * Generates PageList widget
@@ -86,14 +85,16 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
     $sql_order = empty($order) ? "" : " ORDER BY $order";
 
     // Compile all conditions
-    $sql_state = "WHERE page_state = 0";
-    $sql_cats = (empty($mode)) ? "" : " AND " . sedby_compilecats($mode, $cats, (bool)$subs);
-    $sql_extra = (empty($extra)) ? "" : " AND " . $extra;
+    $sql_state = Cot::$cfg['plugin']['pagelist']['published_only'] ? "page_state = 0" : "";
+    $sql_cats = sedby_compilecats($mode, $cats, (bool)$subs);
+    $sql_extra = (empty($extra)) ? "" : $extra;
+
     if (($noself == true) && defined('COT_PAGES') && !defined('COT_LIST')) {
       global $id;
-      $sql_noself = " AND page_id != " . $id;
+      $sql_noself = "page_id != " . $id;
     }
-    $sql_cond = $sql_state . $sql_cats . $sql_extra . $sql_noself;
+
+    $sql_cond = sedby_build_where(array($sql_state, $sql_cats, $sql_extra, $sql_noself));
 
     $pagelist_join_columns = "";
     $pagelist_join_tables = "";
