@@ -88,9 +88,11 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
     $sql_cats = sedby_compilecats($mode, $cats, (bool)$subs);
     $sql_extra = (empty($extra)) ? "" : $extra;
 
-    if (($noself == true) && defined('COT_PAGES') && !defined('COT_LIST')) {
+    if (($noself) && defined('COT_PAGES') && !defined('COT_LIST')) {
       global $id;
       $sql_noself = "page_id != " . $id;
+    } else {
+      $sql_noself = "";
     }
 
     $sql_cond = sedby_build_where(array($sql_state, $sql_cats, $sql_extra, $sql_noself));
