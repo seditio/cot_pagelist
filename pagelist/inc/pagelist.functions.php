@@ -213,7 +213,7 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
     $t->parse();
     $output = $t->text();
 
-    if (($jj > 1) && $enableCache && !$enablePagination) {
+    if (($jj > 1) && $enableCache) {
       Cot::$cache->db->store($cache_name, $output, SEDBY_PAGELIST_REALM, (int)$cache_ttl);
     }
   }
