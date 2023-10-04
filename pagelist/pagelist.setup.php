@@ -31,6 +31,7 @@ gentags=20:separator:::
 usertags=21:radio::0:Generate User tags
 comments=22:radio::0:Generate Comments tags
 ratings=23:radio::0:Generate Ratings tags
+thanks=23:radio::0:Generate Thanks tags
 
 misc=30:separator:::
 published_only=31:radio::1:Select only published pages
