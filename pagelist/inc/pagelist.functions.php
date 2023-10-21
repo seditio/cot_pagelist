@@ -155,6 +155,8 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
       $jj++;
     }
 
+    ($jj == 1) && $t->parse("MAIN.NO_ROW");
+
     // Render pagination if needed
     if ($enablePagination) {
       $totalitems = Cot::$db->query("SELECT p.* FROM $db_pages AS p $sql_cond")->rowCount();
@@ -202,8 +204,6 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
         'PAGE_TOP_RES' => $res,
       ));
     }
-
-    ($jj==1) && $t->parse("MAIN.NONE");
 
     /* === Hook === */
     foreach (cot_getextplugins('pagelist.tags') as $pl)

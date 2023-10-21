@@ -6,7 +6,7 @@ Hooks=pagelist.loop
 ==================== */
 
 /**
-* Pagelist Plugin / Loop for ratings
+* Pagelist Plugin / Loop for thanks
 *
 * @package pagelist
 * @author Vladimir Sibirov & Dmitri Beliavski
