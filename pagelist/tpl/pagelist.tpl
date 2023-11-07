@@ -7,6 +7,11 @@
 		<p class="small mb-0">Comments: {PAGE_ROW_COMMENTS_COUNT}</p>
 	</li>
 <!-- END: PAGE_ROW -->
+<!-- BEGIN: NO_ROW -->
+	<li>
+		{PHP.L.None}
+	</li>
+<!-- END: NO_ROW -->
 </ul>
 
 <!-- IF {PAGE_TOP_PAGINATION} -->
