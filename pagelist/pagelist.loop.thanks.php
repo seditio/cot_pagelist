@@ -17,7 +17,5 @@ defined('COT_CODE') or die('Wrong URL');
 
 if (Cot::$cfg['plugin']['pagelist']['thanks'] && cot_plugin_active('thanks')) {
 	require_once cot_incfile('thanks', 'plug', 'api');
-	$t->assign(array(
-		'PAGE_ROW_THANKS_COUNT' => thanks_count('page', $row['page_id']),
-	));
+	$t->assign('PAGE_ROW_THANKS_COUNT', thanks_count('page', $row['page_id']));
 }

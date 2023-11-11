@@ -39,8 +39,7 @@ if (Cot::$cfg['plugin']['pagelist']['encrypt_ajax_urls'] == 1) {
   $ajax_block = $params[10];
   $cache_name = $params[11];
   $cache_ttl = $params[12];
-}
-else {
+} else {
   $tpl = cot_import('tpl','G','TXT');
   $items = cot_import('items','G','INT');
   $order = cot_import('order','G','TXT');
