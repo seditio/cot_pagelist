@@ -1,10 +1,10 @@
-# cot_pagelist
+# sedby_pagelist
 Rendering page widgets anywhere
 
 ## Использование:
 
 ```html
-{PHP|cot_pagelist($tpl, $items, $order, $condition, $mode, $cats, $subs, $pagination, $noself, $offset)}
+{PHP|sedby_pagelist($tpl, $items, $order, $condition, $mode, $cats, $subs, $pagination, $noself, $offset)}
 ```
 
 Назначение параметров (в скобках значение по умолчанию -- если не указано пользователем):
