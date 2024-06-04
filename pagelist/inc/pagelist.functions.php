@@ -184,17 +184,7 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
       $pagenav = cot_pagenav($url_area, $url_params, $d, $totalitems, $items, $pagination, '', $ajax_mode, $ajax_block, $ajax_plug, $ajax_plug_params);
 
       // Assign pagination tags
-      $t->assign(array(
-        'PAGE_TOP_PAGINATION'  => $pagenav['main'],
-        'PAGE_TOP_PAGEPREV'    => $pagenav['prev'],
-        'PAGE_TOP_PAGENEXT'    => $pagenav['next'],
-        'PAGE_TOP_FIRST'       => $pagenav['first'],
-        'PAGE_TOP_LAST'        => $pagenav['last'],
-        'PAGE_TOP_CURRENTPAGE' => $pagenav['current'],
-        'PAGE_TOP_TOTALLINES'  => $totalitems,
-        'PAGE_TOP_MAXPERPAGE'  => $items,
-        'PAGE_TOP_TOTALPAGES'  => $pagenav['total']
-      ));
+      $t->assign(cot_generatePaginationTags($pagenav));
     }
 
     // Assign service tags

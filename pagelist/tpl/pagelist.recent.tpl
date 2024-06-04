@@ -19,7 +19,7 @@
 <!-- IF {PAGE_TOP_PAGINATION} -->
 <nav aria-label="Pagelist Pagination">
 	<ul class="pagination pagination-sm justify-content-center mb-0">
-		{PAGE_TOP_PAGEPREV}{PAGE_TOP_PAGINATION}{PAGE_TOP_PAGENEXT}
+		{PREVIOUS_PAGE}{PAGINATION}{NEXT_PAGE}
 	</ul>
 </nav>
 <!-- ENDIF -->
