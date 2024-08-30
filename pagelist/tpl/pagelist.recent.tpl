@@ -14,9 +14,13 @@
 		</p>
 	</li>
 <!-- END: PAGE_ROW -->
+<!-- BEGIN: NO_ROW -->
+	<li>
+		{PHP.L.None}
+	</li>
+<!-- END: NO_ROW -->
 </ul>
-
-<!-- IF {PAGE_TOP_PAGINATION} -->
+<!-- IF {PAGINATION} -->
 <nav aria-label="Pagelist Pagination">
 	<ul class="pagination pagination-sm justify-content-center mb-0">
 		{PREVIOUS_PAGE}{PAGINATION}{NEXT_PAGE}
