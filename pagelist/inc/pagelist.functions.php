@@ -110,11 +110,9 @@ function sedby_pagelist($tpl = 'pagelist', $items = 0, $order = '', $extra = '',
     // Add i18n features if installed
     if (cot_plugin_active('i18n')) {
       global $i18n_read, $i18n_notmain, $i18n_locale;
-
       if (isset($i18n_notmain) && $i18n_notmain && $i18n_read) {
         $db_i18n_pages = Cot::$db->i18n_pages;
         $db_i18n_locale = Cot::$db->quote($i18n_locale);
-
         $pagelist_join_columns .= " , i18n.* ";
         $pagelist_join_tables .= " LEFT JOIN $db_i18n_pages AS i18n ON i18n.ipage_id = p.page_id AND i18n.ipage_locale = $db_i18n_locale AND i18n.ipage_id IS NOT NULL ";
       }
